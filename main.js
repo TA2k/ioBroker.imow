@@ -88,12 +88,21 @@ class Imow extends utils.Adapter {
                 return this.extractHidden(res.data);
             })
             .catch((error) => {
+                if (error && error.message === "Unsupported protocol stihl-imow-ios:") {
+                    this.session = qs.parse(error.request._options.path.split("?")[1]);
+                    this.log.debug("Refresh successful");
+                    this.setState("info.connection", true, true);
+                    return "refresh";
+                }
                 this.log.error(error);
                 error.response && this.log.error(JSON.stringify(error.response.data));
             });
 
         if (!formField) {
             this.log.error("Missing form fields");
+            return;
+        }
+        if (formField === "refresh") {
             return;
         }
 
