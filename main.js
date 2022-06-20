@@ -182,7 +182,7 @@ class Imow extends utils.Adapter {
                         { command: "Refresh", name: "True = Refresh" },
                         { command: "toDocking", name: "True = toDocking" },
                         { command: "edgeMowing", name: "True = edgeMowing" },
-                        { command: "startMowingFromPoint", name: "DurationInMunitesDividedBy10,StartPoint: Example: 9,0", type: "string", role: "text" },
+                        { command: "startMowingFromPoint", name: "DurationInMunitesDividedBy10,StartPoint: Example: 9,0", type: "string", role: "text", def: "9,0" },
                     ];
                     remoteArray.forEach((remote) => {
                         this.setObjectNotExists(id + ".remote." + remote.command, {
@@ -191,6 +191,7 @@ class Imow extends utils.Adapter {
                                 name: remote.name || "",
                                 type: remote.type || "boolean",
                                 role: remote.role || "boolean",
+                                def: remote.def || false,
                                 write: true,
                                 read: true,
                             },
