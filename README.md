@@ -15,6 +15,19 @@
 
 Adapter for Stihl Viking iMow
 
+## Loginablauf
+
+Die iMow Mail und Passwort eingeben.
+
+## Steuern
+
+imow.0.id.remote auf true/false setzen steuert den jeweiligen Befehl
+
+
+## Diskussion und Fragen
+
+<https://forum.iobroker.net/topic/55747/test-adapter-stihl-viking-imow>
+
 ## Changelog
 
 ### 0.0.1
