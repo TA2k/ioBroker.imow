@@ -10,6 +10,8 @@ const utils = require("@iobroker/adapter-core");
 const axios = require("axios").default;
 const qs = require("qs");
 const Json2iob = require("./lib/json2iob");
+const tough = require("tough-cookie");
+const { HttpsCookieAgent } = require("http-cookie-agent/http");
 
 class Imow extends utils.Adapter {
     /**
@@ -25,7 +27,15 @@ class Imow extends utils.Adapter {
         this.on("unload", this.onUnload.bind(this));
         this.deviceArray = [];
         this.json2iob = new Json2iob(this);
-        this.requestClient = axios.create();
+        this.cookieJar = new tough.CookieJar();
+        this.requestClient = axios.create({
+            withCredentials: true,
+            httpsAgent: new HttpsCookieAgent({
+                cookies: {
+                    jar: this.cookieJar,
+                },
+            }),
+        });
     }
 
     /**
@@ -51,7 +61,7 @@ class Imow extends utils.Adapter {
 
         await this.login();
 
-        if (this.session.token) {
+        if (this.session.access_token) {
             await this.getDeviceList();
             await this.updateDevices();
             this.updateInterval = setInterval(async () => {
@@ -92,7 +102,6 @@ class Imow extends utils.Adapter {
             url: "https://oauth2.imow.stihl.com/authentication/authenticate/?lang=de",
             headers: {
                 Host: "oauth2.imow.stihl.com",
-                Cookie: "ARRAffinity=8936bd4a12e60db0a554f5937e1a16edce8ba520c268213fd4382beb24a87865; ARRAffinitySameSite=8936bd4a12e60db0a554f5937e1a16edce8ba520c268213fd4382beb24a87865; oauth2=p9jd8qdres9lodqj3cl1eq9ho5",
                 accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
                 "content-type": "application/x-www-form-urlencoded",
                 origin: "https://oauth2.imow.stihl.com",
@@ -113,8 +122,8 @@ class Imow extends utils.Adapter {
                 this.log.error(JSON.stringify(res.data));
             })
             .catch((error) => {
-                if (error.response && error.response.status === 302) {
-                    this.session = qs.parse(error.response.headers.location.split("?")[1]);
+                if (error && error.message === "Unsupported protocol stihl-imow-ios:") {
+                    this.session = qs.parse(error.request._options.path.split("?")[1]);
                     this.log.info("Login successful");
                     this.setState("info.connection", true, true);
                     return;
@@ -147,7 +156,7 @@ class Imow extends utils.Adapter {
                 this.log.debug(JSON.stringify(res.data));
 
                 for (const device of res.data) {
-                    const id = device.id; // Alternative datapoint for serial number
+                    const id = device.id;
 
                     this.deviceArray.push(id);
                     const name = device.name + " " + device.deviceTypeDescription;
