@@ -71,6 +71,13 @@ class Imow extends utils.Adapter {
         this.log.info("Login successful");
         await this.getDeviceListmyimow();
         await this.updateDevicesmyimow();
+        /*TODO add signal websocket
+        POST https://msg-signalr-app-mowcii-p.service.signalr.net/client/negotiate?hub=deviceevents
+        WS https://msg-signalr-app-mowcii-p.service.signalr.net/client/?hub=deviceevents&id=  connectionId
+        Ocp-Apim-Subscriptio and bearer
+        send {"protocol": "json", "version": 1}.
+        ping {"type":6}.
+*/
         this.updateInterval = setInterval(async () => {
           await this.updateDevicesmyimow();
         }, this.config.interval * 60 * 1000);
