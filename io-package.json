@@ -80,7 +80,8 @@
   "native": {
     "username": "",
     "password": "",
-    "interval": 10
+    "interval": 10,
+    "type": "imow"
   },
   "objects": [],
   "instanceObjects": [

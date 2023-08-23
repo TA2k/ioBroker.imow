@@ -9,7 +9,7 @@
 const utils = require("@iobroker/adapter-core");
 const axios = require("axios").default;
 const qs = require("qs");
-const Json2iob = require("./lib/json2iob");
+const Json2iob = require("json2iob");
 const tough = require("tough-cookie");
 const { HttpsCookieAgent } = require("http-cookie-agent/http");
 
@@ -59,19 +59,66 @@ class Imow extends utils.Adapter {
     this.session = {};
     this.subscribeStates("*");
 
-    await this.login();
+    if (this.config.type === "myimow") {
+      await this.loginMyImow();
+    } else {
+      await this.login();
+    }
 
     if (this.session.access_token) {
-      await this.getDeviceList();
-      await this.updateDevices();
-      this.updateInterval = setInterval(async () => {
+      if (this.config.type === "myimow") {
+        this.log.info("Login successful");
+      } else {
+        await this.getDeviceList();
         await this.updateDevices();
-      }, this.config.interval * 60 * 1000);
-      this.refreshTokenInterval = setInterval(() => {
-        this.refreshToken();
-      }, 30 * 60 * 60 * 1000);
+        this.updateInterval = setInterval(async () => {
+          await this.updateDevices();
+        }, this.config.interval * 60 * 1000);
+        this.refreshTokenInterval = setInterval(() => {
+          this.refreshToken();
+        }, 30 * 60 * 60 * 1000);
+      }
     }
   }
+  async loginMyImow() {
+    await this.requestClient({
+      method: "get",
+      url: "https://login.stihl.com/stihlidproduction.onmicrosoft.com/b2c_1a_production_flow_signin/oauth2/v2.0/authorize",
+      params: {
+        response_type: "code",
+        code_challenge_method: "S256",
+        scope: "offline_access https://login.stihl.com/scopes/profile openid",
+        code_challenge: "tVL4sat5ICtwTzAYgTRY51yCElsZE3Y3NScIcBRFe5o",
+        response_mode: "query",
+        redirect_uri: "imow://www.imow.com/welcome/login",
+        client_id: "0d947284-c186-454e-96fd-0094f4510b3f",
+        state: "ACdOTeZS0KKrvWX8bPvhJ1WrncQUbvAJzpufx1swubg",
+      },
+    })
+      .then((res) => {
+        this.log.debug(JSON.stringify(res.data));
+      })
+      .catch((error) => {
+        this.log.error(error);
+        error.response && this.log.error(JSON.stringify(error.response.data));
+      });
+    await this.requestClient({
+      method: "post",
+      url: "https://login.stihl.com/stihlidproduction.onmicrosoft.com/B2C_1A_production_Flow_SignIn/SelfAsserted?tx=StateProperties=eyJUSUQiOiIwMjhjNDdmMi1kZjNjLTQzYWMtYWYxYy1hNTVlNDc5NDNmZTYifQ&p=B2C_1A_production_Flow_SignIn",
+      headers: {
+        "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+      },
+      data: { request_type: "RESPONSE", signInName: this.config.username, password: this.config.password },
+    })
+      .then((res) => {
+        this.log.debug(JSON.stringify(res.data));
+      })
+      .catch((error) => {
+        this.log.error(error);
+        error.response && this.log.error(JSON.stringify(error.response.data));
+      });
+  }
+
   async login() {
     const formField = await this.requestClient({
       method: "get",
