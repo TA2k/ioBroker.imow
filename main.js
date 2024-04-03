@@ -90,7 +90,7 @@ class Imow extends utils.Adapter {
       }
       let expireTimeout = 30 * 60 * 60 * 1000;
       if (this.session.expires_in) {
-        expireTimeout = this.session.expires_in * 1000;
+        expireTimeout = this.session.expires_in;
       }
       this.refreshTokenInterval = setInterval(() => {
         this.refreshToken();
@@ -205,7 +205,7 @@ class Imow extends utils.Adapter {
         return this.extractHidden(res.data);
       })
       .catch((error) => {
-        if (error && error.message === "Unsupported protocol stihl-imow-ios:") {
+        if (error && error.message.includes("Unsupported protocol")) {
           this.session = qs.parse(error.request._options.path.split("?")[1]);
           this.log.debug("Refresh successful");
           this.setState("info.connection", true, true);
