@@ -248,7 +248,7 @@ class Imow extends utils.Adapter {
         this.log.error(JSON.stringify(res.data));
       })
       .catch((error) => {
-        if (error && error.message === "Unsupported protocol stihl-imow-ios:") {
+        if (error && error.message.includes("Unsupported protocol")) {
           this.session = qs.parse(error.request._options.path.split("?")[1]);
           this.log.info("Login successful");
           this.setState("info.connection", true, true);

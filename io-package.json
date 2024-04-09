@@ -1,10 +1,10 @@
 {
   "common": {
     "name": "imow",
-    "version": "0.1.1",
+    "version": "0.1.2",
 
     "news": {
-      "0.1.1": {
+      "0.1.2": {
         "en": "Fix login issues",
         "de": "Behebung von Anmeldeproblemen"
       },
