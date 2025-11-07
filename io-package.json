@@ -59,6 +59,7 @@
     "extIcon": "https://raw.githubusercontent.com/TA2k/ioBroker.imow/master/admin/imow.png",
     "readme": "https://github.com/TA2k/ioBroker.imow/blob/master/README.md",
     "loglevel": "info",
+    "tier": 2,
     "mode": "daemon",
     "type": "garden",
     "compact": true,
