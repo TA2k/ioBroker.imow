@@ -51,7 +51,10 @@
     },
     "authors": ["TA2k <tombox2020@gmail.com>"],
     "keywords": ["imow", "stihl", "viking"],
-    "license": "MIT",
+    "licenseInformation": {
+      "type": "free",
+      "license": "MIT"
+    },
     "platform": "Javascript/Node.js",
     "main": "main.js",
     "icon": "imow.png",
