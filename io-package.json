@@ -53,7 +53,6 @@
     "keywords": ["imow", "stihl", "viking"],
     "license": "MIT",
     "platform": "Javascript/Node.js",
-    "main": "main.js",
     "icon": "imow.png",
     "enabled": true,
     "extIcon": "https://raw.githubusercontent.com/TA2k/ioBroker.imow/master/admin/imow.png",
