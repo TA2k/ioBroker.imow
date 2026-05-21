@@ -30,6 +30,10 @@ imow.0.id.remote auf true/false setzen steuert den jeweiligen Befehl
 
 ## Changelog
 
+
+### **WORK IN PROGRESS**
+- (ioBroker-Bot) Adapter requires js-controller >= 6.0.11 now.
+
 ### 0.1.1
 
 - Fix login issues
